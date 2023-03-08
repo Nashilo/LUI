@@ -1,0 +1,38 @@
+﻿@page "/ViewApp"
+@using LUI.Booking
+
+<h3>View Appointments</h3>
+<MudSimpleTable>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Date</th>
+        <th>Type of Treatment</th>
+        <th>Cost</th>
+        <th>Edit</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var client in AppointmentsList)
+    {
+        <tr>
+            <td>@client.Name</td>
+            <td>@client.Phone</td>
+            <td>@client.AppointmentDate</td>
+            <td>@client.Treatment.Id</td>
+            <td>@client.</td>
+            <td>@client</td>
+            <td>
+                <MudButton>Edit</MudButton>
+            </td>
+        </tr>
+    }
+    </tbody>
+</MudSimpleTable>
+
+
+@code {
+
+    private List<AppointmentDto> AppointmentsList { get; } = new();
+}

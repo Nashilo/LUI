@@ -1,0 +1,22 @@
+﻿@page "/"
+@inject NavigationManager NavigationManager
+<PageTitle>Index</PageTitle>
+
+<h1>Hii!</h1>
+<h2>Welcome...</h2>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Admin">Admin</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="ELogin">Employee</MudButton>
+
+@code
+{
+    public async Task Admin()
+    {
+        NavigationManager.NavigateTo($"/AdminLogin");
+    }
+
+    public async Task ELogin()
+    {
+        NavigationManager.NavigateTo($"/ELogin");
+    }
+}

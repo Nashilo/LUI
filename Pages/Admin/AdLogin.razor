@@ -1,0 +1,35 @@
+﻿@page "/AdminLogin"
+@using Microsoft.AspNetCore.Components
+@using LUI.Client
+@inject NavigationManager NavigationManager
+
+<h1>Admin Login Page</h1>
+<h2>Welcome Admin :) </h2>
+
+<h3>Login...</h3>
+
+<EditForm Model="@login">
+    <MudGrid>
+        <MudItem>
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Enter your Email" @bind-Value="login.Name"></MudTextField>
+                    <MudTextField Label="Enter your Password" @bind-Value="login.Password"></MudTextField>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" class="btn btn-primary" OnClick="Enter"> Login </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+</EditForm>
+
+@code {
+    public Login login = new();
+
+    public async Task Enter()
+    {
+        NavigationManager.NavigateTo($"/AdminHome");
+    }
+}

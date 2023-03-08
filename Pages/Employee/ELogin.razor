@@ -1,0 +1,33 @@
+﻿@page "/Elogin"
+@using Microsoft.AspNetCore.Components
+@using LUI.Client
+@inject NavigationManager NavigationManager
+
+<h1>Employee Login Page</h1>
+<h2>Welcome </h2>
+
+<EditForm Model="@login">
+    <MudGrid>
+        <MudItem>
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Enter your Email" @bind-Value="login.Name"></MudTextField>
+                    <MudTextField Label="Enter your Password" @bind-Value="login.Password"></MudTextField>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" class="btn btn-primary" OnClick="Enter"> Login </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+</EditForm>
+
+@code {
+    public Login login = new();
+
+    public async Task Enter()
+    {
+        NavigationManager.NavigateTo($"/EHome");
+    }
+}

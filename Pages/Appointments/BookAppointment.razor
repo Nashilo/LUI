@@ -1,0 +1,141 @@
+﻿@page "/bookingAppointment"
+@using Microsoft.AspNetCore.Components
+@using LUI.Booking
+@using LUI.Repositories
+@using DocumentFormat.OpenXml.Office2010.Excel
+@using LUI.Models
+@using Color = MudBlazor.Color
+<h3>Booking Appointment</h3>
+
+<EditForm Model="@booking">
+    <MudGrid>
+        <MudItem>
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Enter Client Name" @bind-Value="booking.Name"></MudTextField>
+                    <MudTextField Label="Enter your Phone" @bind-Value="booking.Phone"></MudTextField>
+                    <MudSelect T="TreatmentTypeDto? " Label="TreatmentType" @bind-Value="@SelectedType"
+                               Variant="Variant.Outlined" 
+                               Dense="true" Margin="Margin.Dense" ToStringFunc="@(treatmentType=> treatmentType != null ? treatmentType.Name : " ")">
+                        @foreach (var Type in TreatTypes)
+                        {
+                        
+                            <MudSelectItem T="TreatmentTypeDto" Value="Type">@Type.Name</MudSelectItem>
+
+                        }
+                    </MudSelect>
+                    @if (SelectedType != null)
+                    {
+                        <MudSelect Disabled="@(SelectedType == null)" T="TreatmentDto?" Label="Type of Treatment" @bind-Value="SelectedTreatment" Variant="Variant.Outlined"
+                                   Dense="true" Margin="Margin.Dense" ToStringFunc="@(treatment => treatment != null ? treatment.Name : " ")">
+                            @foreach (var treatment in Treats.Where(x => x.TreatmentTypeId == SelectedType.Id))
+                            {
+                                <MudSelectItem T="TreatmentDto" Value="treatment">@treatment.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+
+                    <MudDatePicker PickerVariant="PickerVariant.Static" Color="Color.Secondary" Rounded="true" @bind-Date="AppointmentDate"/>
+                    <MudTimePicker PickerVariant="PickerVariant.Static" Color="Color.Secondary" Rounded="true" @bind-Time="AppointmentTime"/>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" class="btn btn-primary" OnClick="BookApp"> Book </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+</EditForm>
+
+<MudSimpleTable Style="overflow: auto">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Date of Appointment</th>
+        <th>Type of Treatment</th>
+        <th>Treatment</th>
+        <th>Cost of Treatment</th>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in bookings)
+        {
+            <td></td>
+            <td>@item.Phone</td>
+            <td>@item.AppointmentDate</td>
+            @*<td>@item.TreatmentType.Name</td>
+            <td>@item.Treatment.Name</td>
+            <td>@item.Treatment.Cost</td>*@
+            <MudButton ButtonType="ButtonType.Submit" class="btn btn-primary"> Book </MudButton>
+
+
+        }
+    </tbody>
+
+</MudSimpleTable>
+
+
+@code {
+
+    public AppointmentDto booking = new();
+    public TreatmentDto treat = new();
+    public TreatmentTypeDto type = new();
+    DateTime? AppointmentDate = DateTime.Now;
+    TimeSpan? AppointmentTime = DateTime.Now.TimeOfDay;
+
+    [Inject]
+    private IRepository Repository { get; set; } = default!;
+
+    private List<TreatmentDto> Treats { get; set; } = new();
+    private List<TreatmentTypeDto> TreatTypes { get; set; } = new();
+    // private Treatment? SelectedTreat { get; set; } = new();
+    private TreatmentTypeDto? SelectedType { get; set; } 
+    private TreatmentDto? SelectedTreatment { get; set; } 
+    private List<AppointmentDto> bookings { get; set; } = new();
+
+    //private List<Treatment> Treats = new();
+    protected override async Task OnInitializedAsync()
+    { 
+        
+        TreatTypes = await Repository.GetTreatmentType();
+        Treats = await Repository.GetTreatments();
+        Console.WriteLine(AppointmentTime);
+        Console.WriteLine("Fetching treats");
+        await base.OnInitializedAsync();
+       
+       
+    }
+
+    private async Task BookApp()
+    {
+
+        
+        if (AppointmentDate != null && AppointmentTime != null && SelectedTreatment != null)
+        {
+            //booking.Cost = SelectedTreatment.Cost;
+            booking.Treatment = new Treatment()
+            {
+                Id = SelectedTreatment.Id,
+                Name = SelectedTreatment.Name,
+                TreatmentTypeId = SelectedTreatment.TreatmentTypeId,
+                Cost = SelectedTreatment.Cost
+            };
+            booking.AppointmentDate = new DateTime(AppointmentDate.Value.Year, AppointmentDate.Value.Month, AppointmentDate.Value.Day, AppointmentTime.Value.Hours, AppointmentTime.Value.Minutes, AppointmentTime.Value.Seconds);
+            await Repository.BookAppointment(booking);
+        }
+
+        Console.WriteLine("Appointment Booked!");
+    }
+
+
+    
+    private async Task GetCost(int id)
+    {
+        
+        Console.WriteLine("Getting Price" );
+    }
+    
+    
+
+}

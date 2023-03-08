@@ -1,0 +1,61 @@
+﻿@page "/AdminHome"
+@using ClosedXML.Excel
+@using LUI.Booking
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<h3>AdHome</h3>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Book">Book Appointment</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="View">View Appointment</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="DownloadExcelSheet">View Daily Transactions</MudButton>
+
+@code {
+    private List<DBAppointment> AppointmentsList { get; } = new();
+
+    public async Task Book()
+    {
+        NavigationManager.NavigateTo($"/bookingAppointment",true);
+
+    }
+    public async Task View()
+    {
+        NavigationManager.NavigateTo($"/ViewApp");
+
+    }
+    private async Task GetExcelSheet()
+    {
+        await GetExcelSheet();
+        
+        var workbook = new XLWorkbook();
+        var ws = workbook.AddWorksheet("Appointments");
+
+        int row = 1;
+        ws.Cell(row, 1).Value = "Name";
+        ws.Cell(row, 1).Value = "Phone";
+        ws.Cell(row, 1).Value = "Date";
+        ws.Cell(row, 1).Value = "Type of Treatment";
+        ws.Cell(row, 1).Value = "Cost";
+        row++;
+
+        foreach (var client in AppointmentsList)
+        {
+            ws.Cell(row, 1).Value = client.Name;
+            ws.Cell(row, 1).Value = client.Phone;
+            ws.Cell(row, 1).Value = client.AppointmentDate;
+            ws.Cell(row, 1).Value = client.TreatmentType.Name;
+            ws.Cell(row, 1).Value = client.Treatment.Name;
+            ws.Cell(row, 1).Value = client.Treatment.Cost;
+        }
+        workbook.SaveAs("wwwroot/Documents/Appointments.xlsx");
+    }
+
+    private async Task DownloadExcelSheet()
+    {
+        var res = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (res == false) return;
+
+        await JSRuntime.InvokeVoidAsync("downloadFromUrl", new { url = "/Documents/Appointments.xlsx", fileName = "Appointments.xlsx" });
+    }
+
+}

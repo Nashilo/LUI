@@ -1,0 +1,22 @@
+﻿@inject NavigationManager NavigationManager
+@page "/EHome"
+<h3>Home</h3>
+<h1>Hiii </h1>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Book">Book Appointment</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="View">View Appointments</MudButton>
+
+
+
+@code {
+    public async Task Book()
+    {
+        NavigationManager.NavigateTo($"/bookingAppointment");
+
+    }
+    public async Task View()
+    {
+        NavigationManager.NavigateTo($"/ViewApp");
+
+    }
+}
